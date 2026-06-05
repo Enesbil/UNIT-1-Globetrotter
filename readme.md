@@ -2,7 +2,7 @@
 
 Submitted by: **Muhammed Bilek**
 
-Estimated time spent: **18** hours spent in total
+Estimated time spent: **9** hours spent in total
 
 Deployed Application (optional): [Globetrotter Deployed Site](https://unit-1-globetrotter.onrender.com/)
 
