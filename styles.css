@@ -891,8 +891,11 @@ footer.foot {
   .nav ul li:not(:last-child) { border-bottom: 1px solid rgba(14, 14, 14, 0.15); }
   .nav ul a { display: block; padding: 0.95rem 1.25rem; }
 
-  /* Hero: stack the two sides, drop the center line. */
-  .hero { flex-direction: column; min-height: auto; }
+  /* Hero: stack the two sides, drop the center line. Also release
+     the desktop max-height/overflow cap: stacked, the two sides are
+     taller than the viewport, so the 100vh cap was clipping the
+     bottom of the "two continents" side. */
+  .hero { flex-direction: column; min-height: auto; max-height: none; overflow: visible; }
   .hero::before { display: none; }
   .side { padding: 3rem 1.5rem 0; }
   .side--flip { padding: 0 1.5rem 3rem; }
