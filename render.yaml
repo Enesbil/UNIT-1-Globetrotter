@@ -1,0 +1,16 @@
+# Render Blueprint for the İstanbul Guide.
+# This is a plain HTML/CSS site (no build step, no framework), so it
+# deploys as a Render "Static Site" that just serves the repo root.
+# Docs: https://render.com/docs/blueprint-spec
+#
+# To deploy: push this repo to GitHub, then in Render click
+# "New +" > "Blueprint", pick this repo, and Render reads this file.
+services:
+  - type: web
+    name: istanbul-guide
+    runtime: static
+    # Nothing to compile, so the build is a no-op.
+    buildCommand: echo "static site, nothing to build"
+    # The HTML/CSS/assets all live at the repo root, so publish from there.
+    # index.html is served automatically as the landing page.
+    staticPublishPath: .

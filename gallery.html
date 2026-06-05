@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cattractions · İstanbul Guide</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ========== SHARED NAV: keep in sync with other pages ========== -->
+  <nav class="nav" aria-label="primary">
+    <a class="logo" href="index.html" aria-label="Istanbul Guide home">
+      <img class="logo-mark" src="assets/logo.png" alt="Istanbul Guide">
+    </a>
+
+    <!-- CSS-only mobile menu (checkbox hack, no JS). The off-screen
+         checkbox holds open/closed state; the burger <label> toggles
+         it; on small screens .nav ul drops down below the bar. -->
+    <input type="checkbox" id="nav-toggle" class="nav-toggle">
+    <label class="nav-burger" for="nav-toggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </label>
+
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="attractions.html">Attractions</a></li>
+      <li><a href="eat.html">Eat</a></li>
+      <li><a href="gallery.html">Cattractions</a></li>
+    </ul>
+  </nav>
+
+  <main>
+
+    <!-- PAGE INTRO: black banner, saffron accent. -->
+    <section class="page-intro page-intro--ink">
+      <span class="label">gallery · the real attractions</span>
+      <h1>the <em>cats</em> of İstanbul.</h1>
+      <p>The humans are tenants. The cats hold the lease in Istanbul.</p>
+    </section>
+
+    <!-- CAT GRID: masonry layout via CSS columns (.cat-grid in styles.css).
+         Mixing .cat--portrait (2:3) and .cat--standard (3:2) flows naturally
+         without dead space because columns balance themselves.
+         <figure> + <figcaption> is the semantic HTML for an image with a
+         caption (better for screen readers and search engines than
+         <div> + <p>). -->
+    <section class="feed-section">
+      <div class="cat-grid">
+
+        <figure class="cat cat--portrait">
+          <img src="assets/cats/cat-32.jpg" alt="A tabby cat sitting upright on the marble floor of Hagia Sophia, beneath a Byzantine chandelier.">
+          <figcaption>Hagia Sophia. Sitting under the chandelier longer than most tour groups stay in the building.</figcaption>
+        </figure>
+
+        <figure class="cat cat--standard">
+          <img src="assets/cats/cat-26.jpg" alt="A tabby and white cat sprawled belly-up on a stone step, claws extended in mid-stretch.">
+          <figcaption>Off the clock. Step is rented by the minute.</figcaption>
+        </figure>
+
+        <figure class="cat cat--standard">
+          <img src="assets/cats/cat-40.jpg" alt="A calico kitten standing next to a bright pink handbag and white shoes in a shop doorway.">
+          <figcaption>Window-shopping in Karaköy. Unfortunately the bag is a bit out of budget.</figcaption>
+        </figure>
+
+        <figure class="cat cat--feature">
+          <img src="assets/cats/cat-35.jpg" alt="A ginger and white cat sleeping on a Turkish newspaper on a Beşiktaş Belediyesi park bench, next to a glass of çay.">
+          <figcaption>Beşiktaş. Has read the paper. Has finished the çay. Will not be taking questions.</figcaption>
+        </figure>
+
+        <figure class="cat cat--portrait">
+          <img src="assets/cats/cat-39.jpg" alt="A man's hand cradling a tiny tabby kitten with its eyes still closed.">
+          <figcaption>Newest local. Will be running the block by Tuesday.</figcaption>
+        </figure>
+
+        <figure class="cat cat--standard">
+          <img src="assets/cats/cat-24.jpg" alt="Two tabby cats sitting close together inside a building, one staring directly at the camera.">
+          <figcaption>The pair that runs the front desk. Don't make eye contact unless you've got food.</figcaption>
+        </figure>
+
+        <figure class="cat cat--standard cat--solo">
+          <img src="assets/cats/cat-14.jpg" alt="A brown and white cat peeking up over the edge of a wooden plank, eyes wide, ears alert.">
+          <figcaption>Surveillance. Whatever you're doing, it's been logged.</figcaption>
+        </figure>
+
+        <figure class="cat cat--feature">
+          <img src="assets/cats/cat-41.jpg" alt="A ginger and white cat sitting loaf-style on a Turkish carpet draped over a wooden chair outside a shop.">
+          <figcaption>Carpet shop, somewhere in the old city. The cat is the demo.</figcaption>
+        </figure>
+
+        <figure class="cat cat--portrait">
+          <img src="assets/cats/cat-10.jpg" alt="A white and ginger cat standing fully on its hind legs, paws stretched up toward something off-frame.">
+          <figcaption>Standing on the count of three for one (1) treat. Negotiated up from a sniff.</figcaption>
+        </figure>
+
+      </div>
+
+      <!-- Photo credit. target=_blank opens the link in a new tab;
+           rel=noopener is a security convention so the new tab can't
+           access this page's window object. -->
+      <p class="cat-credit">
+        Photos: <a href="https://istanbul.for91days.com/the-cats-of-istanbul/" target="_blank" rel="noopener">istanbul.for91days.com</a>
+      </p>
+    </section>
+
+    <!-- WHERE NEXT: links to the other pages. -->
+    <section class="where-next" aria-label="where next">
+      <h2>where next →</h2>
+      <p class="lede">Now you've met the locals.</p>
+      <div class="row">
+        <a class="btn" href="attractions.html">Top Attractions</a>
+        <a class="btn btn--green" href="eat.html">Eat Guide</a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========== SHARED FOOTER: keep in sync with other pages ========== -->
+  <footer class="foot">
+    <div class="foot-top">
+      <form class="newsletter" aria-label="Newsletter signup"
+            onsubmit="event.preventDefault(); this.querySelector('input').value=''; this.querySelector('.newsletter-confirm').hidden=false;">
+        <label class="newsletter-label" for="nl-email">get the <span class="accent">next city</span> in your inbox.</label>
+        <div class="newsletter-row">
+          <input id="nl-email" class="newsletter-input" type="email" required placeholder="you@somewhere.com" autocomplete="email">
+          <button class="btn" type="submit">subscribe →</button>
+        </div>
+        <span class="newsletter-confirm" hidden>thanks. çok güzel.</span>
+      </form>
+      <div class="foot-brand">
+        <img class="foot-logo" src="assets/logo.png" alt="Istanbul Guide">
+        <span class="tagline">built for the curious</span>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>İstanbul Guide by M.E.B. · © 2026</span>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,985 @@
+/* =============================================================
+   İSTANBUL GUIDE: STYLESHEET
+   -----------------------------------------------------------
+   Layout strategy in one paragraph:
+   - The site is built around a "two continents" idea, so the home
+     hero is split down the middle (Avrupa / Asya).
+   - Most multi-column blocks (features, attractions, meals) use
+     CSS Grid or Flexbox with a 50/50 column split that collapses
+     to a single column under 768px.
+   - Visual style is "neobrutalist": flat colors, hard 3px ink
+     borders, hard 4–6px offset shadows (no blur).
+   - Color tokens, type, and shadow values all live in :root so
+     a color/shadow tweak only happens in one place.
+
+   Read order: tokens → globals → reusable bits (buttons, nav,
+   footer) → home page sections → subpage sections → mobile
+   media queries → reduced-motion query.
+   ============================================================= */
+
+
+/* =============================================================
+   1. DESIGN TOKENS: change colors/shadows once, here.
+   `var(--name)` reads them anywhere below.
+   ============================================================= */
+:root {
+  --bordeaux: #7A1F2B;       /* primary, "Turkish flag" red */
+  --cream:    #F4EBD9;       /* page bg, light text on dark */
+  --ink:      #0E0E0E;       /* near-black for borders + text */
+  --saffron:  #E8B84A;       /* accent, hover, highlights */
+  --green:    #1F4A3A;       /* secondary, "Asia side" */
+
+  --shadow-sm: 4px 4px 0 var(--ink);   /* small offset shadow */
+  --shadow:    6px 6px 0 var(--ink);   /* big offset shadow */
+}
+
+
+/* =============================================================
+   2. GLOBAL RESET + DEFAULTS
+   ============================================================= */
+
+/* universal selector , kill all default browser margin/padding
+   so layout is predictable. box-sizing: border-box means an
+   element's `width` includes its padding + border (way easier
+   to reason about than the default `content-box`). */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+/* All headings use the display font. line-height: 1 prevents
+   tall headings from getting extra vertical space. */
+h1, h2, h3 {
+  font-family: 'Bricolage Grotesque', 'Anton', Impact, sans-serif;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+/* Inherit text color on links by default , each section then
+   overrides where needed (e.g. .nav a is bordeaux). */
+a { color: inherit; }
+
+
+/* =============================================================
+   3. BUTTONS: used everywhere (hero CTA, footer subscribe, etc.)
+   .btn is the base; .btn--cream/green/saffron are color variants.
+   Hover effect = "lift" the button up-left and grow the shadow.
+   ============================================================= */
+.btn {
+  display: inline-block;
+  background: var(--bordeaux);
+  color: var(--cream);
+  border: 3px solid var(--ink);
+  box-shadow: var(--shadow-sm);
+  padding: 1rem 1.75rem;
+  font-weight: 700;
+  font-size: 1.05rem;
+  text-decoration: none;
+  /* transition only the things that change on hover, for snap */
+  transition: transform 0.08s, box-shadow 0.08s, background 0.08s;
+}
+.btn:hover {
+  background: var(--saffron);
+  color: var(--ink);
+  /* Lift up-left by 2px AND grow the shadow by 2px so the
+     bottom-right corner of the shadow stays put. Classic
+     neobrutalist "press" feel. */
+  transform: translate(-2px, -2px);
+  box-shadow: 8px 8px 0 var(--ink);
+}
+.btn--cream   { background: var(--cream);   color: var(--ink); }
+.btn--green   { background: var(--green);   color: var(--cream); }
+.btn--saffron { background: var(--saffron); color: var(--ink); }
+
+
+/* =============================================================
+   4. NAV: sticky top bar, logo left, links right.
+   Used on every page.
+   ============================================================= */
+.nav {
+  /* sticky = scrolls with page until it hits top: 0, then
+     stays pinned. z-index keeps it above scrolling content. */
+  position: sticky; top: 0; z-index: 10;
+
+  display: flex;
+  justify-content: space-between;   /* logo left, ul right */
+  align-items: center;
+  padding: 1.5rem 2.5rem;
+  background: var(--cream);
+  border-bottom: 3px solid var(--ink);
+}
+
+/* Logo is an <a> wrapping the <img>. inline-flex so the image
+   centers vertically next to (potential) future text. */
+.nav .logo {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  transition: transform 0.2s ease;
+}
+.nav .logo:hover .logo-mark { transform: rotate(-4deg); }   /* cute tilt */
+.nav .logo-mark {
+  height: 80px;
+  width: auto;             /* preserve aspect ratio */
+  display: block;
+  transition: transform 0.2s ease;
+}
+
+/* Nav link list. flex makes them sit in a row with gap between. */
+.nav ul {
+  display: flex;
+  gap: 2.25rem;
+  list-style: none;
+  font-size: 1.15rem;
+}
+.nav a {
+  color: var(--bordeaux);
+  text-decoration: none;
+  font-weight: 600;
+}
+.nav a:hover { color: var(--ink); }
+
+/* --- CSS-only hamburger (checkbox hack, no JS) ---
+   The checkbox is the state store. It's pulled off-screen (not
+   display:none) so it stays keyboard-focusable. The burger is
+   hidden on desktop and only revealed in the mobile media query
+   at the bottom of this file. */
+.nav-toggle {
+  position: absolute;
+  width: 1px; height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+.nav-burger {
+  display: none;                 /* desktop: links show, burger hidden */
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 48px; height: 48px;
+  padding: 0 9px;
+  border: 3px solid var(--ink);
+  background: var(--bordeaux);   /* matches the bordeaux .btn fill */
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+}
+.nav-burger span {
+  display: block;
+  height: 3px;
+  background: var(--cream);      /* cream lines on bordeaux */
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+/* Saffron focus ring (bordeaux ring would disappear into the bg). */
+.nav-toggle:focus-visible ~ .nav-burger { outline: 3px solid var(--saffron); outline-offset: 3px; }
+/* When open, morph the three bars into an X. 8px = bar gap (5) + bar height (3). */
+.nav-toggle:checked ~ .nav-burger span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+.nav-toggle:checked ~ .nav-burger span:nth-child(2) { opacity: 0; }
+.nav-toggle:checked ~ .nav-burger span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+/* Tablet (769-1023px): 80px logo + 1.5rem padding eats too much
+   vertical room on a ~800-tall iPad. Trim the logo to keep the
+   nav under ~110px. (Below 768 there's a smaller mobile step.) */
+@media (min-width: 769px) and (max-width: 1023px) {
+  .nav { padding: 1.25rem 2rem; }
+  .nav .logo-mark { height: 64px; }
+  .nav ul { gap: 1.5rem; font-size: 1.05rem; }
+}
+
+
+/* =============================================================
+   5. PLACEHOLDER (fallback when an <img> isn't ready yet): kept
+   for legacy/local use. Live pages all have real <img> tags.
+   ============================================================= */
+.placeholder {
+  background:
+    repeating-linear-gradient(45deg, rgba(255,255,255,0.15) 0 2px, transparent 2px 14px),
+    rgba(0,0,0,0.2);
+  border: 3px solid var(--cream);
+  color: var(--cream);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em;
+  font-size: 0.85rem;
+  text-align: center; padding: 1rem;
+}
+.placeholder--saffron {
+  background:
+    repeating-linear-gradient(45deg, var(--ink) 0 2px, transparent 2px 14px),
+    var(--saffron);
+  border: 3px solid var(--ink);
+  color: var(--ink);
+}
+
+
+/* =============================================================
+   6. HOME: HERO (split down the middle)
+   Two flex children, each 50% wide. A 4px ink line down the
+   center is faked with a `::before` pseudo-element on the hero.
+   ============================================================= */
+.hero {
+  display: flex;
+  /* Hero fills most of the viewport but caps at 100vh so the
+     next section is always reachable. */
+  min-height: 85vh;
+  max-height: 100vh;
+  border-bottom: 3px solid var(--ink);
+  position: relative;     /* so ::before can be positioned over it */
+  overflow: hidden;       /* clip the bleeding side images */
+}
+
+/* The vertical Bosphorus line. ::before is a pseudo-element ,
+   a fake child element you create in CSS only. */
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  left: 50%;
+  width: 4px;
+  background: var(--ink);
+  transform: translateX(-50%);   /* shift left by half its width to truly center */
+  z-index: 2;
+}
+
+/* Each side. flex: 1 means "share the space equally with siblings". */
+.side {
+  flex: 1;
+  padding: 4rem 3rem 0;
+  display: flex; flex-direction: column;
+  gap: 2rem;
+  position: relative;
+}
+.side--flip { padding: 0 3rem 4rem; }    /* image-on-top variant */
+.side.eu { background: var(--bordeaux); color: var(--cream); }
+.side.as { background: var(--green);    color: var(--cream); }
+
+/* Small uppercase tag above the headline. */
+.side .label {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 0.85rem; letter-spacing: 0.3em; text-transform: uppercase;
+  opacity: 0.85;
+}
+.side .label--end { align-self: flex-end; }   /* right-side label, end of flex axis */
+
+.side h1 { font-size: clamp(3rem, 6vw, 5rem); }  /* fluid type: between 3rem and 5rem */
+.side .h1-right { text-align: right; }
+
+/* Side images: bleed to the side edges by negating padding with
+   negative margin. aspect-ratio keeps the image proportional
+   regardless of its natural size. */
+.side .placeholder,
+.side .side-img {
+  width: calc(100% + 6rem);     /* 6rem = the 3rem horizontal padding × 2 */
+  margin: auto -3rem 0;
+  aspect-ratio: 16 / 10;
+  height: auto;
+  display: block;
+  object-fit: cover;            /* fill the box, crop overflow, no distortion */
+  border-top: 3px solid var(--ink);
+}
+.side--flip .placeholder,
+.side--flip .side-img {
+  margin: 0 -3rem auto;
+  border-top: none;
+  border-bottom: 3px solid var(--ink);
+}
+.side--flip h1.h1-right { margin-top: auto; }    /* push headline to bottom of column */
+
+
+/* =============================================================
+   7. HOME: SCROLL CUE
+   A small bouncing chevron that fades out once you scroll.
+   The fade is toggled in JS: see <script> at bottom of index.html.
+   ============================================================= */
+.scroll-cue {
+  /* fixed = positioned relative to the viewport, not the page,
+     so it stays put while you scroll. */
+  position: fixed;
+  left: 50%;
+  /* env(safe-area-inset-bottom) = the iPhone home-bar height
+     (0 on most browsers). max() bumps the cue above the iOS
+     Safari bottom toolbar so it never hides behind it. */
+  bottom: max(1.5rem, env(safe-area-inset-bottom) + 1rem);
+  z-index: 3;
+  width: 32px; height: 32px;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--cream);
+  opacity: 0.7;
+  transform: translateX(-50%);
+  animation: cue-bob 1.8s ease-in-out infinite;
+  transition: opacity 0.3s ease;
+  pointer-events: auto;
+}
+.scroll-cue:hover { opacity: 1; }
+.scroll-cue svg { width: 100%; height: 100%; display: block; }
+.scroll-cue.is-hidden { opacity: 0; pointer-events: none; }   /* JS adds this on scroll */
+
+/* Gentle up-and-down bounce. translate(-50%, ...) preserves
+   the centering transform from above while animating Y. */
+@keyframes cue-bob {
+  0%, 100% { transform: translate(-50%, 0); }
+  50%      { transform: translate(-50%, 5px); }
+}
+
+
+/* =============================================================
+   8. HOME: STRIPE (the "ferry fact" black bar under the hero)
+   ============================================================= */
+.stripe {
+  background: var(--ink); color: var(--cream);
+  text-align: center;
+  padding: 1.5rem 2rem;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 1.3rem; letter-spacing: 0.05em;
+  border-bottom: 3px solid var(--ink);
+}
+.stripe span { color: var(--saffron); }
+
+
+/* =============================================================
+   9. HOME: FEATURES (the four-tile grid: img | text on row 1,
+   text | img on row 2, both rows on the home page)
+
+   We use ONE css grid with 2 columns × 2 rows. Each child is
+   placed explicitly with grid-column / grid-row so the order
+   is unambiguous and easy to flip on mobile.
+   ============================================================= */
+.features {
+  display: grid;
+  grid-template-columns: 1fr 1fr;       /* two equal columns */
+  border-bottom: 3px solid var(--ink);
+}
+
+/* Both image and text tiles share these defaults. */
+.feat-img,
+.feat-text {
+  min-height: 320px;                    /* tall enough on short copy */
+  border-bottom: 3px solid var(--ink);  /* row 1 / row 2 divider */
+}
+.feat-img {
+  width: 100%;
+  height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  object-fit: cover;                    /* image fills tile, no distortion */
+  object-position: center;
+}
+.feat-text {
+  padding: 3rem;
+  display: flex; flex-direction: column; justify-content: center;
+  gap: 1rem;
+}
+.feat-text .tag {
+  font-size: 0.85rem; letter-spacing: 0.2em;
+  font-weight: 700; text-transform: uppercase;
+}
+.feat-text h2 { font-size: clamp(2rem, 4vw, 3rem); }
+.feat-text .btn { align-self: flex-start; }     /* don't stretch button to full width */
+.feat-text.eu { background: var(--bordeaux); color: var(--cream); }
+.feat-text.as { background: var(--green);    color: var(--cream); }
+
+/* Explicit grid placement for the four tiles.
+   Row 1: image-1 (EU) | text-1 (EU)
+   Row 2: text-2 (AS)  | image-2 (AS)
+   Note the diagonal: text/image swap sides between rows. */
+.feat-img-1  { grid-column: 1; grid-row: 1; border-right: 3px solid var(--ink); }
+.feat-text-1 { grid-column: 2; grid-row: 1; }
+.feat-text-2 { grid-column: 1; grid-row: 2; border-right: 3px solid var(--ink); }
+.feat-img-2  { grid-column: 2; grid-row: 2; }
+
+/* Bottom row is the last row of the grid; the section's own
+   border-bottom handles the seam, so kill it on the last tiles. */
+.feat-text-2, .feat-img-2 { border-bottom: none; }
+
+/* Big screens with enough vertical room: lock the entire 4-tile
+   grid to the viewport so it fits in one screen with the sticky
+   nav. Below 720px tall (split-screen, short laptops), let the
+   section grow naturally so copy isn't clipped. */
+@media (min-width: 1024px) and (min-height: 720px) {
+  .features {
+    /* viewport height minus sticky nav (logo 80 + 1.5rem*2 padding + 3px border) */
+    height: calc(100vh - 131px);
+    grid-template-rows: 1fr 1fr;
+  }
+  .feat-img, .feat-text { min-height: 0; }   /* drop the 320px floor */
+  .feat-text { overflow: hidden; }           /* clip overflow only when locked to viewport */
+}
+
+
+/* =============================================================
+   10. WHERE-NEXT: the cream "where next →" CTA strip at the
+   bottom of every page.
+   ============================================================= */
+.where-next {
+  padding: 4rem 3rem;
+  text-align: center;
+  background: var(--cream);
+}
+.where-next h2 { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 0.75rem; }
+.where-next p.lede {
+  max-width: 50ch;             /* limit prose width for readability */
+  margin: 0 auto 2rem;
+}
+.where-next .row {
+  display: flex; gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;             /* stack buttons on narrow screens */
+}
+
+
+/* =============================================================
+   11. FOOTER: two stacked bands.
+   Top band: newsletter form on the left, brand on the right.
+   Bottom band: thin saffron rule with copyright row.
+   ============================================================= */
+footer.foot {
+  background: var(--ink);
+  color: var(--cream);
+  padding: 0;
+  display: block;
+}
+
+.foot-top {
+  padding: 3rem 2.5rem 2.5rem;
+  display: flex; justify-content: space-between; align-items: flex-end;
+  gap: 3rem; flex-wrap: wrap;
+}
+.foot-brand {
+  display: flex; flex-direction: column; gap: 0.75rem;
+  align-items: flex-end; text-align: right;
+  flex: 0 0 auto;             /* don't grow or shrink */
+}
+.foot-brand .foot-logo {
+  height: 80px;
+  width: auto;
+  display: block;
+  /* The logo art is bordeaux on transparent. To make it read
+     against the dark footer, we recolor it to cream using a
+     two-step CSS filter:
+       brightness(0)   → forces every pixel to black
+       invert(1)       → flips black to white
+       opacity(0.92)   → softens slightly so it doesn't shout */
+  filter: brightness(0) invert(1) opacity(0.92);
+}
+.foot-brand .tagline {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 0.8rem; letter-spacing: 0.3em; text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.foot-bottom {
+  /* faint cream rule between the two bands. rgba(244,235,217,0.15)
+     is the cream color at 15% opacity. */
+  border-top: 1px solid rgba(244, 235, 217, 0.15);
+  padding: 1.25rem 2.5rem;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 1rem;
+  font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase;
+  opacity: 0.7;
+}
+.foot-bottom a { color: var(--saffron); text-decoration: none; }
+.foot-bottom a:hover { color: var(--cream); }
+
+/* Newsletter form (lives in the top band). */
+.newsletter {
+  display: flex; flex-direction: column; gap: 0.65rem;
+  flex: 1 1 380px;             /* grow/shrink, base width 380px */
+  max-width: 460px;
+}
+.newsletter-label {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: clamp(1.1rem, 1.6vw, 1.4rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--cream);
+  line-height: 1.1;
+}
+.newsletter-label .accent { color: var(--saffron); }
+
+.newsletter-row { display: flex; gap: 0.5rem; }
+
+/* Underlined-only input, no boxy border. */
+.newsletter-input {
+  flex: 1;
+  background: transparent;
+  color: var(--cream);
+  border: none;
+  border-bottom: 2px solid var(--cream);
+  padding: 0.55rem 0.25rem;
+  font-family: inherit;
+  font-size: 1rem;
+  outline: none;               /* we restyle :focus below */
+}
+.newsletter-input::placeholder { color: rgba(244, 235, 217, 0.5); }
+.newsletter-input:focus { border-bottom-color: var(--saffron); }
+
+/* The submit button overrides the global .btn styles to fit
+   the dark footer (saffron fill, cream-shadow). */
+.newsletter .btn {
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
+  background: var(--saffron);
+  color: var(--ink);
+  border-color: var(--saffron);
+  box-shadow: 3px 3px 0 var(--cream);
+}
+.newsletter .btn:hover {
+  background: var(--cream);
+  border-color: var(--cream);
+  box-shadow: 5px 5px 0 var(--saffron);
+}
+
+/* The "thanks. çok güzel." confirmation (hidden by default
+   via the [hidden] attribute, shown by JS on submit). */
+.newsletter-confirm {
+  font-size: 0.85rem; color: var(--saffron);
+  font-weight: 700; letter-spacing: 0.05em;
+}
+
+
+/* =============================================================
+   12. SUBPAGE: PAGE INTRO BANNER (top of attractions / eat /
+   gallery). Variants pick which background color to use.
+   ============================================================= */
+.page-intro {
+  padding: clamp(3rem, 7vh, 5rem) clamp(1.5rem, 4vw, 3rem);
+  border-bottom: 3px solid var(--ink);
+  color: var(--cream);
+}
+.page-intro--bordeaux { background: var(--bordeaux); }
+.page-intro--green    { background: var(--green); }
+.page-intro--ink      { background: var(--ink); }
+
+.page-intro .label {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 0.85rem; letter-spacing: 0.3em; text-transform: uppercase;
+  opacity: 0.9;
+  display: block; margin-bottom: 1rem;
+}
+.page-intro--ink .label { color: var(--saffron); opacity: 1; }   /* punch on dark bg */
+.page-intro h1 { font-size: clamp(2.5rem, 6vw, 4.5rem); margin-bottom: 1rem; }
+.page-intro h1 em { color: var(--saffron); font-style: normal; }
+.page-intro p { max-width: 60ch; font-size: 1.1rem; }
+
+
+/* =============================================================
+   13. ATTRACTIONS: 6-cell grid (3 images + 3 text blocks).
+
+   Why one grid for all 6 instead of 3 separate flex rows? With
+   3 flex rows, each row computes its own 50% width independently
+   and sub-pixel rounding can leave the column seam misaligned by
+   1px between rows. A single CSS Grid computes the column line
+   once for the whole section, so all seams line up perfectly.
+
+   Layout (desktop):
+     row 1:  image  |  text   (Hagia Sophia)
+     row 2:  text   |  image  (Blue Mosque,  swapped)
+     row 3:  image  |  text   (Grand Bazaar)
+   The image's aspect-ratio (3/2) drives each row's height.
+   ============================================================= */
+.a-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 3px solid var(--ink);
+}
+
+/* Shared rules for all 6 cells. */
+.a-img, .a-text {
+  border-bottom: 3px solid var(--ink);    /* row dividers */
+}
+
+.a-img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;        /* stacked (mobile) ratio; overridden below in 2-col */
+  object-fit: cover;
+  display: block;
+  /* fallback striped pattern if the <img> fails to load */
+  background:
+    repeating-linear-gradient(45deg, var(--ink) 0 2px, transparent 2px 14px),
+    var(--saffron);
+  color: var(--ink);
+}
+
+.a-text {
+  padding: clamp(2rem, 5vw, 4rem);
+  display: flex; flex-direction: column; justify-content: center;
+  gap: 1rem;
+  background: var(--cream);
+}
+
+/* Explicit grid placement, one cell per child. The class names
+   are keyed to (row, col) so reading the HTML matches the layout. */
+.a-r1c1 { grid-column: 1; grid-row: 1; border-right: 3px solid var(--ink); }
+.a-r1c2 { grid-column: 2; grid-row: 1; }
+.a-r2c1 { grid-column: 1; grid-row: 2; border-right: 3px solid var(--ink); }
+.a-r2c2 { grid-column: 2; grid-row: 2; }
+.a-r3c1 { grid-column: 1; grid-row: 3; border-right: 3px solid var(--ink); }
+.a-r3c2 { grid-column: 2; grid-row: 3; }
+
+/* Last row's bottom border comes from the section, so kill the
+   per-cell bottom border on row 3. */
+.a-r3c1, .a-r3c2 { border-bottom: none; }
+
+/* Big numeric label "01 / 02 / 03". :nth-of-type counts siblings
+   of the same tag, so among the 3 <div class="a-text"> children:
+     1st = bordeaux, 2nd = saffron-outlined, 3rd = green. */
+.a-num {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: clamp(3rem, 5vw, 5rem); line-height: 1;
+}
+.a-grid > .a-text:nth-of-type(1) .a-num { color: var(--bordeaux); }
+.a-grid > .a-text:nth-of-type(2) .a-num {
+  color: var(--saffron);
+  -webkit-text-stroke: 2px var(--ink);   /* outlined text */
+}
+.a-grid > .a-text:nth-of-type(3) .a-num { color: var(--green); }
+
+/* Two columns (>=769px): let the TEXT cell drive each row's
+   height and make the image stretch to fill it (object-fit keeps
+   it from distorting). This is the same trick .feat-img uses, and
+   it's what keeps the divider borders spanning the FULL row at
+   every width — the old fixed aspect-ratio left the image shorter
+   than the text, so the border stopped partway down. */
+@media (min-width: 769px) {
+  .a-img { height: 100%; min-height: 320px; aspect-ratio: auto; }
+}
+/* Tablet range: a touch less padding so the copy fits comfortably. */
+@media (min-width: 769px) and (max-width: 1023px) {
+  .a-text { padding: 1.5rem; }
+}
+
+.a-text .kicker {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 0.85rem; letter-spacing: 0.3em; text-transform: uppercase;
+  opacity: 0.7;
+}
+.a-text h2 { font-size: clamp(2rem, 4vw, 3rem); }
+.a-text p { max-width: 55ch; line-height: 1.55; }
+.a-text .btn { align-self: flex-start; margin-top: 0.5rem; }
+
+
+/* =============================================================
+   14. ATTRACTIONS: embedded Google Map iframe.
+   ============================================================= */
+.map-section {
+  padding: clamp(2.5rem, 5vw, 4rem) clamp(1.5rem, 4vw, 3rem);
+  background: var(--cream);
+  border-bottom: 3px solid var(--ink);
+}
+.map-section .map-head {
+  display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+.map-section h2 { font-size: clamp(1.8rem, 3vw, 2.5rem); }
+.map-section .meta {
+  font-size: 0.8rem; letter-spacing: 0.3em; text-transform: uppercase;
+  opacity: 0.7;
+}
+.map-frame {
+  border: 3px solid var(--ink);
+  box-shadow: 6px 6px 0 var(--bordeaux);
+  width: 100%; aspect-ratio: 16 / 9; max-height: 480px;
+  display: block;
+}
+
+
+/* =============================================================
+   15. EAT: the "three meals" page.
+   Each meal has a black banner stripe + a feature row.
+   ============================================================= */
+.meal-stripe {
+  background: var(--ink); color: var(--cream);
+  padding: 1.25rem 2rem;
+  border-bottom: 3px solid var(--ink);
+  display: flex; align-items: baseline; justify-content: center;
+  gap: 1rem; flex-wrap: wrap;
+}
+.meal-stripe .tr {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  color: var(--saffron);
+}
+.meal-stripe .en {
+  font-size: 1rem; letter-spacing: 0.3em; text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.meal-feature {
+  display: flex; align-items: stretch;
+  /* No min-height on the row itself: the meal-img has its own
+     min-height: 360px floor below, and we want the row to be
+     image-driven so the text panel doesn't stretch into a tall
+     empty band on short viewports. */
+  border-bottom: 3px solid var(--ink);
+}
+.meal-feature.flip { flex-direction: row-reverse; }
+
+.meal-feature .meal-img,
+.meal-feature .placeholder {
+  flex: 1; width: 50%; min-height: 360px;
+  object-fit: cover; display: block;
+  border-right: 3px solid var(--ink);
+  background:
+    repeating-linear-gradient(45deg, var(--ink) 0 2px, transparent 2px 14px),
+    var(--saffron);
+  color: var(--ink);
+}
+.meal-feature.flip .meal-img,
+.meal-feature.flip .placeholder {
+  border-right: none;
+  border-left: 3px solid var(--ink);
+}
+
+.meal-text {
+  flex: 1;
+  padding: clamp(2rem, 4vw, 3.5rem);
+  display: flex; flex-direction: column; justify-content: center;
+  gap: 1rem;
+}
+/* Color variants , applied to the parent .meal-feature so the
+   text color flows down into .meal-text. */
+.meal-feature.eu  .meal-text { background: var(--bordeaux); color: var(--cream); }
+.meal-feature.as  .meal-text { background: var(--green);    color: var(--cream); }
+.meal-feature.ink .meal-text { background: var(--ink);      color: var(--cream); }
+
+.meal-text .num {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 0.85rem; letter-spacing: 0.3em; text-transform: uppercase;
+  opacity: 0.85;
+}
+.meal-text h2 { font-size: clamp(2rem, 4vw, 3rem); }
+.meal-text .addr {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 0.85rem; letter-spacing: 0.2em; text-transform: uppercase;
+  opacity: 0.85;
+}
+.meal-text p { line-height: 1.55; max-width: 55ch; }
+
+/* Small pill labels like "$$" or "must-try: kaymak" */
+.meal-text .chips { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.25rem; }
+.meal-text .chip {
+  background: var(--cream); color: var(--ink);
+  border: 2px solid var(--ink);
+  padding: 0.3rem 0.7rem;
+  font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+}
+.meal-text .chip.saffron { background: var(--saffron); }
+.meal-text .btn { align-self: flex-start; margin-top: 0.5rem; }
+
+
+/* =============================================================
+   16. CATTRACTIONS (gallery): masonry layout via CSS columns.
+
+   Why CSS columns instead of CSS Grid?
+   Mixing portrait + landscape photos in a Grid leaves dead
+   whitespace because every cell in a row inherits the tallest
+   tile's height. `column-count` flows items top-to-bottom in
+   each column independently, so columns self-balance with no
+   empty cells.
+   ============================================================= */
+.feed-section {
+  padding: clamp(2.5rem, 4vw, 4rem) clamp(1rem, 3vw, 2.5rem);
+  background: var(--cream);
+  border-bottom: 3px solid var(--ink);
+}
+.cat-grid {
+  column-count: 3;
+  column-gap: 1.25rem;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* Each tile. break-inside: avoid stops a tile from being split
+   across two columns mid-image. */
+.cat {
+  display: block;
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;   /* Safari prefix */
+  page-break-inside: avoid;             /* legacy fallback */
+  margin: 0 0 1.25rem;
+  background: var(--cream);
+  border: 3px solid var(--ink);
+  overflow: hidden;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+/* Cycle shadow color on every 5 tiles using nth-child math.
+   5n+1 = 1st, 6th, 11th, ... 5n+2 = 2nd, 7th, 12th, etc. */
+.cat:nth-child(5n+1) { box-shadow: 5px 5px 0 var(--bordeaux); }
+.cat:nth-child(5n+2) { box-shadow: 5px 5px 0 var(--saffron); }
+.cat:nth-child(5n+3) { box-shadow: 5px 5px 0 var(--green); }
+.cat:nth-child(5n+4) { box-shadow: 5px 5px 0 var(--bordeaux); }
+.cat:nth-child(5n+5) { box-shadow: 5px 5px 0 var(--saffron); }
+.cat:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 8px 8px 0 var(--ink);
+}
+
+.cat img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;            /* default: landscape */
+  object-fit: cover;
+  display: block;
+  border-bottom: 3px solid var(--ink);
+  background: var(--ink);
+}
+.cat--portrait img { aspect-ratio: 2 / 3; }   /* override for tall photos */
+
+.cat figcaption {
+  padding: 0.7rem 1rem 0.85rem;
+  font-style: italic;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.cat-credit {
+  text-align: center;
+  margin-top: 2.5rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+.cat-credit a {
+  color: var(--bordeaux);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.cat-credit a:hover { color: var(--ink); }
+
+
+/* =============================================================
+   16b. FOOTER (tablet + down): once the row gets tight, the brand
+   block would otherwise float far to the right with a big empty
+   gap. Stack newsletter above a left-aligned brand instead.
+   ============================================================= */
+@media (max-width: 920px) {
+  .foot-top { flex-direction: column; align-items: stretch; gap: 2rem; }
+  .foot-brand { align-items: flex-start; text-align: left; }
+  /* CRITICAL: kill the 380px flex-basis once the parent goes column.
+     With `flex-direction: column`, flex-basis applies to the vertical
+     axis, so the original `flex: 1 1 380px` was forcing the newsletter
+     to be 380px TALL and leaving a huge empty band above the brand. */
+  .newsletter { flex: 0 0 auto; max-width: none; }
+}
+
+
+/* =============================================================
+   17. RESPONSIVE: phone-sized screens (≤ 768px)
+   Everything that was side-by-side stacks vertically.
+   ============================================================= */
+@media (max-width: 768px) {
+
+  /* Nav: logo + burger on one row; links collapse into a
+     full-width dropdown that the checkbox toggles open. */
+  .nav { padding: 1rem 1.25rem; flex-wrap: wrap; }
+  .nav .logo-mark { height: 56px; }
+  .nav-burger { display: flex; }
+  .nav ul {
+    flex-basis: 100%;              /* force the list onto its own row */
+    flex-direction: column;
+    gap: 0;
+    font-size: 1.05rem;
+    display: none;                 /* closed by default */
+    margin: 0.85rem -1.25rem -1rem; /* bleed to the nav edges */
+    border-top: 3px solid var(--ink);
+    background: var(--cream);
+  }
+  .nav-toggle:checked ~ ul { display: flex; }   /* open */
+  .nav ul li:not(:last-child) { border-bottom: 1px solid rgba(14, 14, 14, 0.15); }
+  .nav ul a { display: block; padding: 0.95rem 1.25rem; }
+
+  /* Hero: stack the two sides, drop the center line. */
+  .hero { flex-direction: column; min-height: auto; }
+  .hero::before { display: none; }
+  .side { padding: 3rem 1.5rem 0; }
+  .side--flip { padding: 0 1.5rem 3rem; }
+  .side h1, .side .h1-right { text-align: left; }
+  .side .placeholder,
+  .side .side-img {
+    width: calc(100% + 3rem);
+    margin: auto -1.5rem 0;
+    aspect-ratio: 16 / 9;
+  }
+  .side--flip .placeholder,
+  .side--flip .side-img { margin: 0 -1.5rem auto; }
+
+  /* Features: collapse to one column.
+     Reorder so the 4 tiles read top-to-bottom: img, text, img, text. */
+  .features { grid-template-columns: 1fr; }
+  .feat-img-1  { grid-column: 1; grid-row: 1; border-right: none; }
+  .feat-text-1 { grid-column: 1; grid-row: 2; }
+  .feat-img-2  { grid-column: 1; grid-row: 3; }
+  .feat-text-2 { grid-column: 1; grid-row: 4; border-right: none; }
+  .feat-img {
+    width: 100%; min-height: 0; aspect-ratio: 16 / 10;
+    border-bottom: 3px solid var(--ink);
+  }
+  .feat-text {
+    padding: 2rem 1.5rem;
+    border-bottom: 3px solid var(--ink);
+  }
+  .feat-text-2 { border-bottom: none; }   /* last tile: no trailing border */
+
+  .where-next { padding: 3rem 1.5rem; }
+  /* Default .where-next .row already has flex-wrap: wrap, so the
+     2-button pages fit on one row naturally and the 3-button home
+     wraps gracefully. No mobile override needed. */
+
+  /* Footer: tighten padding + logo on phones. (The column stacking
+     itself is handled by the <=920px block earlier in this file.) */
+  .foot-top { padding: 2.5rem 1.5rem 2rem; }
+  .foot-brand .foot-logo { height: 64px; }
+  .foot-bottom {
+    padding: 1rem 1.5rem;
+    flex-direction: column; align-items: flex-start; gap: 0.4rem;
+  }
+
+  /* Attractions grid: collapse to 1 column. Reorder cells so the
+     reading order is: image, text, image, text, image, text. */
+  .a-grid { grid-template-columns: 1fr; }
+  .a-r1c1 { grid-column: 1; grid-row: 1; border-right: none; }
+  .a-r1c2 { grid-column: 1; grid-row: 2; }
+  .a-r2c2 { grid-column: 1; grid-row: 3; }   /* image moves up */
+  .a-r2c1 { grid-column: 1; grid-row: 4; border-right: none; }
+  .a-r3c1 { grid-column: 1; grid-row: 5; border-right: none; }
+  .a-r3c2 { grid-column: 1; grid-row: 6; }
+  .a-img { aspect-ratio: 16 / 10; }
+  .a-text { padding: 2rem 1.5rem; }
+
+  .meal-feature, .meal-feature.flip { flex-direction: column; min-height: auto; }
+  .meal-feature .meal-img, .meal-feature .placeholder,
+  .meal-feature.flip .meal-img, .meal-feature.flip .placeholder {
+    width: 100%; min-height: 0; aspect-ratio: 16 / 10;
+    border-right: none; border-left: none;
+    border-bottom: 3px solid var(--ink);
+  }
+}
+
+
+/* Tablet: gallery drops to 2 columns. */
+@media (max-width: 1024px) {
+  .cat-grid { column-count: 2; column-gap: 1rem; }
+  .cat { margin-bottom: 1rem; }
+}
+
+/* Tiny phones: gallery drops to 1 column. */
+@media (max-width: 540px) {
+  .cat-grid { column-count: 1; }
+}
+
+
+/* =============================================================
+   18. REDUCED MOTION: respect users who set
+   "prefers-reduced-motion: reduce" in their OS. Disables all
+   movement-based effects (no penalty for non-motion styles).
+   ============================================================= */
+@media (prefers-reduced-motion: reduce) {
+  .btn, .nav .logo, .nav .logo-mark, .cat { transition: none; }
+  .btn:hover,
+  .nav .logo:hover .logo-mark,
+  .cat:hover { transform: none; }
+  .scroll-cue, .scroll-cue .arrow { transition: none; animation: none; }
+}

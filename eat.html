@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eat Guide · İstanbul Guide</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ========== SHARED NAV: keep in sync with other pages ========== -->
+  <nav class="nav" aria-label="primary">
+    <a class="logo" href="index.html" aria-label="Istanbul Guide home">
+      <img class="logo-mark" src="assets/logo.png" alt="Istanbul Guide">
+    </a>
+
+    <!-- CSS-only mobile menu (checkbox hack, no JS). The off-screen
+         checkbox holds open/closed state; the burger <label> toggles
+         it; on small screens .nav ul drops down below the bar. -->
+    <input type="checkbox" id="nav-toggle" class="nav-toggle">
+    <label class="nav-burger" for="nav-toggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </label>
+
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="attractions.html">Attractions</a></li>
+      <li><a href="eat.html">Eat</a></li>
+      <li><a href="gallery.html">Cattractions</a></li>
+    </ul>
+  </nav>
+
+  <main>
+
+    <!-- PAGE INTRO: green banner sets up the food tour. -->
+    <section class="page-intro page-intro--green">
+      <span class="label">lezzet · the taste list</span>
+      <h1>a day in mouthfuls.</h1>
+      <p>One Istanbul food tour in three meals. Plan a Saturday around it. First-timer-friendly, signature-dish forward, no airport-mall trash.</p>
+    </section>
+
+    <!-- THREE MEALS: each one is a black "kahvaltı / öğle / akşam"
+         banner stripe followed by a feature row.
+         .meal-feature.eu  = bordeaux text background
+         .meal-feature.as  = green text background
+         .meal-feature.ink = ink (black) text background
+         .flip on the row reverses image/text order. -->
+
+    <!-- 1. BREAKFAST -->
+    <div class="meal-stripe">
+      <span class="tr">kahvaltı</span>
+      <span class="en">breakfast · 8–11am</span>
+    </div>
+    <section class="meal-feature eu">
+      <img class="meal-img" src="assets/restaurants/van_kahvaltievi.png" alt="The bordeaux awning of Van Kahvaltı Evi storefront in Cihangir, Istanbul.">
+      <div class="meal-text">
+        <span class="num">01 · breakfast</span>
+        <h2>van kahvaltı evi.</h2>
+        <span class="addr">Cihangir · Defterdar Yokuşu 52/A</span>
+        <p>The breakfast spread that broke the internet, eight little plates of cheese, honeycomb, jam, eggs, and warm bread. Order kaymak (clotted cream) on the side. You will not eat lunch.</p>
+        <div class="chips">
+          <span class="chip">$$</span>
+          <span class="chip saffron">must-try: kaymak</span>
+        </div>
+        <a class="btn btn--cream" href="#">menu →</a>
+      </div>
+    </section>
+
+    <!-- 2. MIDDAY SNACK -->
+    <div class="meal-stripe">
+      <span class="tr">öğle</span>
+      <span class="en">midday · 1–4pm</span>
+    </div>
+    <section class="meal-feature as flip">
+      <img class="meal-img" src="assets/restaurants/gulluoglu.png" alt="The Karaköy Güllüoğlu storefront, with the 1843 founding date over its arched entrance.">
+      <div class="meal-text">
+        <span class="num">02 · midday snack</span>
+        <h2>karaköy güllüoğlu.</h2>
+        <span class="addr">Karaköy · Rıhtım Cd. 3-5</span>
+        <p>The baklava bench-mark since 1820. Order pistachio at the counter, sit at the marble bench inside, watch the ferries. Walk it off across the Galata Bridge with a paper bag of lokum from the corner.</p>
+        <div class="chips">
+          <span class="chip">$</span>
+          <span class="chip saffron">must-try: pistachio baklava + rose lokum</span>
+        </div>
+        <a class="btn btn--cream" href="#">menu →</a>
+      </div>
+    </section>
+
+    <!-- 3. DINNER -->
+    <div class="meal-stripe">
+      <span class="tr">akşam</span>
+      <span class="en">dinner · 7pm onwards</span>
+    </div>
+    <section class="meal-feature ink">
+      <img class="meal-img" src="assets/restaurants/ciya.png" alt="A platter of Çiya Sofrası kebabs with charred cherry tomatoes, parsley, and lavash.">
+      <div class="meal-text">
+        <span class="num">03 · dinner + dessert</span>
+        <h2>çiya sofrası.</h2>
+        <span class="addr">Kadıköy · Güneşli Bahçe Sk. 43</span>
+        <p>Cross to the Asian side, eat regional Anatolian dishes you can't get anywhere else, then walk five minutes to a viral San Sebastián cheesecake spot. End the night with künefe by the ferry.</p>
+        <div class="chips">
+          <span class="chip">$$</span>
+          <span class="chip saffron">must-try: künefe + basque cheesecake</span>
+        </div>
+        <a class="btn btn--cream" href="#">menu →</a>
+      </div>
+    </section>
+
+    <!-- WHERE NEXT: links to the other pages. -->
+    <section class="where-next" aria-label="where next">
+      <h2>where next →</h2>
+      <p class="lede">You've seen the eats, check out the sights!</p>
+      <div class="row">
+        <a class="btn" href="attractions.html">Top Attractions</a>
+        <a class="btn btn--saffron" href="gallery.html">Cattractions</a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========== SHARED FOOTER: keep in sync with other pages ========== -->
+  <footer class="foot">
+    <div class="foot-top">
+      <form class="newsletter" aria-label="Newsletter signup"
+            onsubmit="event.preventDefault(); this.querySelector('input').value=''; this.querySelector('.newsletter-confirm').hidden=false;">
+        <label class="newsletter-label" for="nl-email">get the <span class="accent">next city</span> in your inbox.</label>
+        <div class="newsletter-row">
+          <input id="nl-email" class="newsletter-input" type="email" required placeholder="you@somewhere.com" autocomplete="email">
+          <button class="btn" type="submit">subscribe →</button>
+        </div>
+        <span class="newsletter-confirm" hidden>thanks. çok güzel.</span>
+      </form>
+      <div class="foot-brand">
+        <img class="foot-logo" src="assets/logo.png" alt="Istanbul Guide">
+        <span class="tagline">built for the curious</span>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>İstanbul Guide by M.E.B. · © 2026</span>
+    </div>
+  </footer>
+
+</body>
+</html>

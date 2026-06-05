@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>İstanbul · A First-Timer's Guide</title>
+
+  <!-- Google Fonts: preconnect speeds up the font fetch.
+       Bricolage Grotesque = display headings, Inter = body. this supports the neobrutalist style -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ==========================================================
+       SHARED NAV: identical on every page. If you change a link
+       here, also change it in attractions.html / eat.html / gallery.html. 
+       ========================================================== -->
+  <nav class="nav" aria-label="primary">
+    <a class="logo" href="index.html" aria-label="Istanbul Guide home">
+      <img class="logo-mark" src="assets/logo.png" alt="Istanbul Guide">
+    </a>
+
+    <!-- CSS-only mobile menu (checkbox hack, no JS). The off-screen
+         checkbox holds open/closed state; the burger <label> toggles
+         it; on small screens .nav ul drops down below the bar. -->
+    <input type="checkbox" id="nav-toggle" class="nav-toggle">
+    <label class="nav-burger" for="nav-toggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </label>
+
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="attractions.html">Attractions</a></li>
+      <li><a href="eat.html">Eat</a></li>
+      <li><a href="gallery.html">Cattractions</a></li>
+    </ul>
+  </nav>
+
+  <main>
+
+    <!-- HERO: split down the middle: Avrupa (Europe) | Asya (Asia).
+         The vertical line between the two is a CSS pseudo-element
+         (.hero::before in styles.css). -->
+    <section class="hero" aria-label="hero">
+      <div class="side eu">
+        <span class="label">Avrupa · Europe</span>
+        <h1>one city,</h1>
+        <img class="side-img" src="assets/hero/europa.jpg" alt="The European side of Istanbul">
+      </div>
+
+      <!-- .side--flip = image on top, headline on bottom -->
+      <div class="side as side--flip">
+        <img class="side-img" src="assets/hero/asia.jpg" alt="The Asian side of Istanbul">
+        <h1 class="h1-right">two<br>continents.</h1>
+        <span class="label label--end">Asya · Asia</span>
+      </div>
+
+      <!-- Bouncing chevron at bottom-center; fades out on scroll
+           via the JS at the bottom of this file (toggles .is-hidden). -->
+      <a class="scroll-cue" href="#stripe" aria-label="scroll to next section">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </a>
+    </section>
+
+    <!-- "Bosphorus fact" black bar: single signature stat. -->
+    <div id="stripe" class="stripe">
+      a 15-minute ferry between <span>Avrupa</span> and <span>Asya</span>, cheaper than a grande latte.
+    </div>
+
+    <!-- FEATURES: 2×2 grid built in CSS Grid (.features in styles.css):
+         Row 1: image (EU)  | text (EU)
+         Row 2: text (AS)   | image (AS)
+         The image/text swap rows on row 2, creating a diagonal pattern. -->
+    <section class="features" aria-label="features">
+      <img class="feat-img feat-img-1" src="assets/hero/old-city.jpg" alt="A simit cart in Sultanahmet, Istanbul">
+      <div class="feat-text feat-text-1 eu">
+        <span class="tag">on the European side</span>
+        <h2>the old city.</h2>
+        <p>Hagia Sophia, the Blue Mosque, the Grand Bazaar, all within a 10-minute walk. Start your morning here, and don't skip the simit cart on the corner.</p>
+        <a class="btn btn--cream" href="attractions.html">See attractions →</a>
+      </div>
+
+      <img class="feat-img feat-img-2" src="assets/hero/santos.png" alt="Street life in Kadıköy on the Asian side of Istanbul">
+      <div class="feat-text feat-text-2 as">
+        <span class="tag">on the Asian side</span>
+        <h2>where locals eat.</h2>
+        <p>Kadıköy is messier, younger, cheaper, and where every Istanbul food TikTok is filmed. Cross by ferry, not the bridge.</p>
+        <a class="btn btn--cream" href="eat.html">Eat guide →</a>
+      </div>
+    </section>
+
+    <!-- WHERE NEXT: three CTA buttons to the other pages. -->
+    <section class="where-next" aria-label="where next">
+      <h2>where next →</h2>
+      <p class="lede">A glimpse of the bridge between East and West.</p>
+      <div class="row">
+        <a class="btn" href="attractions.html">Top Attractions</a>
+        <a class="btn btn--green" href="eat.html">Eat Guide</a>
+        <a class="btn btn--saffron" href="gallery.html">Cattractions</a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================================
+       SHARED FOOTER: identical on every page. Newsletter form +
+       brand block on top band, copyright on bottom band.
+       Also duplicated across the other 3 pages: keep in sync.
+       ========================================================== -->
+  <footer class="foot">
+    <div class="foot-top">
+      <!-- Inline submit handler: prevent the page reload, clear the
+           input, then reveal the .newsletter-confirm span by
+           flipping its `hidden` attribute to false. No backend. -->
+      <form class="newsletter" aria-label="Newsletter signup"
+            onsubmit="event.preventDefault(); this.querySelector('input').value=''; this.querySelector('.newsletter-confirm').hidden=false;">
+        <label class="newsletter-label" for="nl-email">get the <span class="accent">next city</span> in your inbox.</label>
+        <div class="newsletter-row">
+          <input id="nl-email" class="newsletter-input" type="email" required placeholder="you@somewhere.com" autocomplete="email">
+          <button class="btn" type="submit">subscribe →</button>
+        </div>
+        <span class="newsletter-confirm" hidden>thanks. çok güzel.</span>
+      </form>
+
+      <div class="foot-brand">
+        <img class="foot-logo" src="assets/logo.png" alt="Istanbul Guide">
+        <span class="tagline">built for the curious</span>
+      </div>
+    </div>
+
+    <div class="foot-bottom">
+      <span>İstanbul Guide by M.E.B. · © 2026</span>
+    </div>
+  </footer>
+
+  <!-- Scroll-cue fade. Hides the chevron once the user has scrolled
+       80px past the top of the page; shows it again at the top.
+       Wrapped in an IIFE (immediately-invoked function expression)
+       to keep its variables out of the global scope. -->
+  <script>
+    (function () {
+      var cue = document.querySelector('.scroll-cue');
+      if (!cue) return;
+      function update() {
+        if (window.scrollY > 80) cue.classList.add('is-hidden');
+        else cue.classList.remove('is-hidden');
+      }
+      window.addEventListener('scroll', update, { passive: true });
+      update();
+    })();
+  </script>
+
+</body>
+</html>

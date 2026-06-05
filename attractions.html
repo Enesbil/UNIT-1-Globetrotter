@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Top Attractions · İstanbul Guide</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ========== SHARED NAV: keep in sync with other pages ========== -->
+  <nav class="nav" aria-label="primary">
+    <a class="logo" href="index.html" aria-label="Istanbul Guide home">
+      <img class="logo-mark" src="assets/logo.png" alt="Istanbul Guide">
+    </a>
+
+    <!-- CSS-only mobile menu (checkbox hack, no JS). The off-screen
+         checkbox holds open/closed state; the burger <label> toggles
+         it; on small screens .nav ul drops down below the bar. -->
+    <input type="checkbox" id="nav-toggle" class="nav-toggle">
+    <label class="nav-burger" for="nav-toggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </label>
+
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="attractions.html">Attractions</a></li>
+      <li><a href="eat.html">Eat</a></li>
+      <li><a href="gallery.html">Cattractions</a></li>
+    </ul>
+  </nav>
+
+  <main>
+
+    <!-- PAGE INTRO: bordeaux banner setting up the page. -->
+    <section class="page-intro page-intro--bordeaux">
+      <span class="label">Avrupa · attractions · 01</span>
+      <h1>the old city's greatest hits.</h1>
+      <p>Three landmarks within a 10-minute walk of each other. Go in this order, in the morning, before the cruise crowds dock.</p>
+    </section>
+
+    <!-- ATTRACTIONS GRID: one CSS Grid, 6 cells, 2 columns x 3 rows.
+         Class names map to grid position so reading the HTML matches
+         the visual layout:
+           a-r1c1 = row 1, col 1  (image, Hagia Sophia)
+           a-r1c2 = row 1, col 2  (text)
+           a-r2c1 = row 2, col 1  (text, swapped order for visual variety)
+           a-r2c2 = row 2, col 2  (image, Blue Mosque)
+           a-r3c1 = row 3, col 1  (image, Grand Bazaar)
+           a-r3c2 = row 3, col 2  (text)
+         The big "01 / 02 / 03" number colors cycle via :nth-of-type
+         on the .a-text children: bordeaux, saffron-outlined, green. -->
+    <section class="a-grid">
+
+      <img class="a-img a-r1c1" src="assets/attractions/hagia_sophia.jpg" alt="Hagia Sophia at golden hour, framed by minarets and the Sultanahmet park.">
+      <div class="a-text a-r1c2">
+        <span class="a-num">01</span>
+        <span class="kicker">Sultanahmet · 30 min visit</span>
+        <h2>hagia sophia.</h2>
+        <p>Over 1500 years old, one of the most famous holy sites in the world and the most photographed building in the city. Skip the audio guide and just walk it slowly. Don't forget to check out the mosaic upstairs!</p>
+        <a class="btn btn--cream" href="#">visit page →</a>
+      </div>
+
+      <div class="a-text a-r2c1">
+        <span class="a-num">02</span>
+        <span class="kicker">Sultanahmet · 20 min visit</span>
+        <h2>the blue mosque.</h2>
+        <p>Six minarets, twenty thousand İznik tiles, and free to enter. Bring a scarf if you're not wearing long sleeves; they hand them out at the door but the line is real.</p>
+        <a class="btn btn--cream" href="#">visit page →</a>
+      </div>
+      <img class="a-img a-r2c2" src="assets/attractions/blue_mosque.jpg" alt="The Blue Mosque silhouetted at sunset, six minarets against a soft sky.">
+
+      <img class="a-img a-r3c1" src="assets/attractions/bazaar.jpg" alt="Inside the Grand Bazaar, an aisle lined with hanging lamps, jewelry, copper, and ceramics.">
+      <div class="a-text a-r3c2">
+        <span class="a-num">03</span>
+        <span class="kicker">Beyazıt · 90 min wander</span>
+        <h2>the grand bazaar.</h2>
+        <p>4,000 shops under one roof, dating to 1461. Bring cash, haggle politely and at length, accept the tea. Get lost on purpose; you'll find the lokum stand sooner that way.</p>
+        <a class="btn btn--cream" href="#">visit page →</a>
+      </div>
+
+    </section>
+
+    <!-- MAP: an embedded Google Map of the Sultanahmet area.
+         loading="lazy" defers loading until it's near the viewport
+         so the rest of the page paints faster. -->
+    <section class="map-section">
+      <div class="map-head">
+        <h2>start here.</h2>
+        <span class="meta">Sultanahmet, İstanbul</span>
+      </div>
+      <iframe class="map-frame"
+        src="https://www.google.com/maps?q=Sultanahmet,Istanbul&output=embed"
+        loading="lazy"
+        title="Map of Sultanahmet, Istanbul"
+        referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </section>
+
+    <!-- WHERE NEXT: links to the other pages. Note: Home is implicit via nav). -->
+    <section class="where-next" aria-label="where next">
+      <h2>where next →</h2>
+      <p class="lede">These are the sights. Check out the eats!</p>
+      <div class="row">
+        <a class="btn btn--green" href="eat.html">Eat Guide</a>
+        <a class="btn btn--saffron" href="gallery.html">Cattractions</a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========== SHARED FOOTER: keep in sync with other pages ========== -->
+  <footer class="foot">
+    <div class="foot-top">
+      <form class="newsletter" aria-label="Newsletter signup"
+            onsubmit="event.preventDefault(); this.querySelector('input').value=''; this.querySelector('.newsletter-confirm').hidden=false;">
+        <label class="newsletter-label" for="nl-email">get the <span class="accent">next city</span> in your inbox.</label>
+        <div class="newsletter-row">
+          <input id="nl-email" class="newsletter-input" type="email" required placeholder="you@somewhere.com" autocomplete="email">
+          <button class="btn" type="submit">subscribe →</button>
+        </div>
+        <span class="newsletter-confirm" hidden>thanks. çok güzel.</span>
+      </form>
+      <div class="foot-brand">
+        <img class="foot-logo" src="assets/logo.png" alt="Istanbul Guide">
+        <span class="tagline">built for the curious</span>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>İstanbul Guide by M.E.B. · © 2026</span>
+    </div>
+  </footer>
+
+</body>
+</html>
